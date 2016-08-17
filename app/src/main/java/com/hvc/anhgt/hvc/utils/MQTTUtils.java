@@ -140,8 +140,8 @@ public class MQTTUtils {
         try {
             MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
             MqttConnectOptions connOpts = new MqttConnectOptions();
-            connOpts.setUserName("pub/1/face_detection_stream/omron");
-            connOpts.setPassword("hdaf33f14f24744a0a0e4337c40bcbc0e4bd57de85bebc14475e007cbc005e680".toCharArray());
+            connOpts.setUserName("pub/1/face_detection_stream/omron_sensor");
+            connOpts.setPassword("t744ef1ef410e3ead9cdcde5f620dedb2ccaeeb6324b8247c3a75a9c4bc2be592".toCharArray());
 
             connOpts.setCleanSession(true);
             System.out.println("Connecting to broker: "+broker);

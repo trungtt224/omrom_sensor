@@ -72,17 +72,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-
-
         hvcBle = new HVC_BLE();
         hvcPrm = new HVC_PRM();
         hvcRes = new HVC_RES();
-
-
-       // MQTTUtils mqtt = new MQTTUtils(this.getApplicationContext());
-        //mqtt.connect();
-       // mqtt.publish("chat","send to Trung");
-
 
         hvcBle.setCallBack(hvcCallback);
         hvcThread = new HVCDeviceThread();
@@ -237,80 +229,83 @@ public class MainActivity extends Activity {
                     String str = "execute : " + String.format("ret = %d / status = 0x%02x", nRet, outStatus);
                     showToast(str.toString());
             } else {
-                StringBuilder str = new StringBuilder();
-//                str.append("\"body_detect\" : " + String.format("%d\n", hvcRes.body.size()));
-//                for (HVC_RES.DetectionResult bodyResult : hvcRes.body) {
-//                    int size = bodyResult.size;
-//                    int posX = bodyResult.posX;
-//                    int posY = bodyResult.posY;
-//                    int conf = bodyResult.confidence;
-//                    str.append(String.format("\"body_detection\" : {\"size\" : %d, \"x\" : %d, \"y\" : %d, \"conf\" : %d}", size, posX, posY, conf));
-//                }
-//                str.append("hand_detect : " + String.format("%d\n", hvcRes.hand.size()));
-//                for (HVC_RES.DetectionResult handResult : hvcRes.hand) {
-//                    int size = handResult.size;
-//                    int posX = handResult.posX;
-//                    int posY = handResult.posY;
-//                    int conf = handResult.confidence;
-//                    str.append(String.format("\"hand_detection\" : %d, \"x\" : %d, \"y\" : %d, \"conf\" : %d}", size, posX, posY, conf));
-//                }
-                str.append("\"face_detect\" : " + String.format("%d\n", hvcRes.face.size()) +", \"data\":{\"flag\":\"true\"");
-                for (HVC_RES.FaceResult faceResult : hvcRes.face) {
-                    if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_FACE_DETECTION) != 0 ) {
-                        int size = faceResult.size;
-                        int posX = faceResult.posX;
-                        int posY = faceResult.posY;
-                        int conf = faceResult.confidence;
-                        str.append(String.format(",\"face_detection\" : {\"size\" : %d, \"x\" : %d, \"y\" : %d, \"conf\" : %d}", size, posX, posY, conf));
-                    }
-                    if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_FACE_DIRECTION) != 0 ) {
-                        str.append(String.format(",\"face_direction\" : {\"yaw\" :  %d, \"pitch\" :  %d, \"roll\" :  %d, \"conf\" :  %d}",
-                                faceResult.dir.yaw, faceResult.dir.pitch, faceResult.dir.roll, faceResult.dir.confidence));
-                    }
-                    if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_AGE_ESTIMATION) != 0 ) {
-                        str.append(String.format(",\"age_stimation\" : {\"age\" :  %d, \"conf\" :  %d}",
-                                faceResult.age.age, faceResult.age.confidence));
-                    }
-                    if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_GENDER_ESTIMATION) != 0 ) {
-                        str.append(String.format(",\"gender_estimation\" : {\"gender\" :  %s, \"confidence\" :  %d}",
-                                faceResult.gen.gender == HVC.HVC_GEN_MALE ? "\"male\"" : "\"female\"", faceResult.gen.confidence));
-                    }
-                    if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_GAZE_ESTIMATION) != 0 ) {
-                        str.append(String.format(",\"gaze_estimation\" : {\"LR\" :  %d, \"UD\" :  %d}",
-                                faceResult.gaze.gazeLR, faceResult.gaze.gazeUD));
-                    }
-                    if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_BLINK_ESTIMATION) != 0 ) {
-                        str.append(String.format(",\"blink_estimation\" : {\"ratioL\" :  %d, \"ratioR\" :  %d}",
-                                faceResult.blink.ratioL, faceResult.blink.ratioR));
-                    }
-                    if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_EXPRESSION_ESTIMATION) != 0 ) {
-                        str.append(String.format(",\"expression_estimation\" : {\"expression\" : \"%s\", \"score\" :  %d, \"degree\" :  %d}",
-                                faceResult.exp.expression == HVC.HVC_EX_NEUTRAL ? "\"neutral\"" :
-                                faceResult.exp.expression == HVC.HVC_EX_NEUTRAL ? "\"neutral\"" :
-                                        faceResult.exp.expression == HVC.HVC_EX_HAPPINESS ? "\"happiness\"" :
-                                                faceResult.exp.expression == HVC.HVC_EX_SURPRISE ? "\"surprise\"" :
-                                                        faceResult.exp.expression == HVC.HVC_EX_ANGER ? "\"anger\"" :
-                                                                faceResult.exp.expression == HVC.HVC_EX_SADNESS ? "\"sadness\"" : "" ,
-                                faceResult.exp.score, faceResult.exp.degree));
-                    }
-                }
-                str.append("}");
 
-
-                final String viewText = str.toString();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        TextView tvVer = (TextView) findViewById(R.id.textView1);
-                        tvVer.setText(viewText);
-
-                        try {
-                            MQTTUtils.sendMessageToBroker(viewText);
-                        } catch (MqttException e) {
-                            e.printStackTrace();
+                if (hvcRes.face.size() != 0 ) {
+                    StringBuilder str = new StringBuilder();
+                    for (HVC_RES.FaceResult faceResult : hvcRes.face) {
+//                        if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_FACE_DETECTION) != 0 ) {
+//                            int size = faceResult.size;
+//                            int posX = faceResult.posX;
+//                            int posY = faceResult.posY;
+//                            int conf = faceResult.confidence;
+//                            str.append(String.format(",\"face_detection\" : {\"size\" : %d, \"x\" : %d, \"y\" : %d, \"conf\" : %d}", size, posX, posY, conf));
+//                        }
+//                        if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_FACE_DIRECTION) != 0 ) {
+//                            str.append(String.format(",\"face_direction\" : {\"yaw\" :  %d, \"pitch\" :  %d, \"roll\" :  %d, \"conf\" :  %d}",
+//                                    faceResult.dir.yaw, faceResult.dir.pitch, faceResult.dir.roll, faceResult.dir.confidence));
+//                        }
+//                        if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_AGE_ESTIMATION) != 0 ) {
+//                            str.append(String.format(",\"age_stimation\" : {\"age\" :  %d, \"conf\" :  %d}",
+//                                    faceResult.age.age, faceResult.age.confidence));
+//                        }
+//                        if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_GENDER_ESTIMATION) != 0 ) {
+//                            str.append(String.format(",\"gender_estimation\" : {\"gender\" :  %s, \"confidence\" :  %d}",
+//                                    faceResult.gen.gender == HVC.HVC_GEN_MALE ? "\"male\"" : "\"female\"", faceResult.gen.confidence));
+//                        }
+//                        if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_GAZE_ESTIMATION) != 0 ) {
+//                            str.append(String.format(",\"gaze_estimation\" : {\"LR\" :  %d, \"UD\" :  %d}",
+//                                    faceResult.gaze.gazeLR, faceResult.gaze.gazeUD));
+//                        }
+//                        if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_BLINK_ESTIMATION) != 0 ) {
+//                            str.append(String.format(",\"blink_estimation\" : {\"ratioL\" :  %d, \"ratioR\" :  %d}",
+//                                    faceResult.blink.ratioL, faceResult.blink.ratioR));
+//                        }
+                        if ((hvcRes.executedFunc & HVC.HVC_ACTIV_EXPRESSION_ESTIMATION) != 0) {
+                            if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_AGE_ESTIMATION) != 0 ) {
+                                if ( (hvcRes.executedFunc & HVC.HVC_ACTIV_GENDER_ESTIMATION) != 0 ) {
+                                    str.append(String.format("{" +
+                                                    "\"device_type\" : \"facial_sensing\", " +
+                                                    "\"face_expression\" : %s, " +
+                                                    "\"age\" :  %d, " +
+                                                    "\"gender\" :  %s, " +
+                                                    "\"gender_confidence\": %d, " +
+                                                    "\"age_confidence\": %d," +
+                                                    " \"expression_score\" : %d}",
+                                            faceResult.exp.expression == HVC.HVC_EX_NEUTRAL ? "\"neutral\"" :
+                                                    faceResult.exp.expression == HVC.HVC_EX_NEUTRAL ? "\"neutral\"" :
+                                                            faceResult.exp.expression == HVC.HVC_EX_HAPPINESS ? "\"happiness\"" :
+                                                                    faceResult.exp.expression == HVC.HVC_EX_SURPRISE ? "\"surprise\"" :
+                                                                            faceResult.exp.expression == HVC.HVC_EX_ANGER ? "\"anger\"" :
+                                                                                    faceResult.exp.expression == HVC.HVC_EX_SADNESS ? "\"sadness\"" : "",
+                                            faceResult.age.age,
+                                            faceResult.gen.gender == HVC.HVC_GEN_MALE ? "\"male\"" : "\"female\"",
+                                            faceResult.gen.confidence,
+                                            faceResult.age.confidence,
+                                            faceResult.exp.score));
+                                }
+                            }
                         }
                     }
-                });
+
+                    final String viewText = str.toString();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            TextView tvVer = (TextView) findViewById(R.id.textView1);
+                            tvVer.setText(viewText);
+
+                            try {
+                                MQTTUtils.sendMessageToBroker(viewText);
+                            } catch (MqttException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+
+
+
+
             }
         }
     };

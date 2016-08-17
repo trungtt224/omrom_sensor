@@ -16,6 +16,7 @@
 
 package com.hvc.anhgt.hvc;
 
+import android.annotation.TargetApi;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -24,6 +25,7 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 import java.lang.reflect.Method;
@@ -33,6 +35,7 @@ import java.util.UUID;
  * Service for managing connection and data communication with a GATT server hosted on a
  * given Bluetooth LE device.
  */
+@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class BleDeviceService {
     public static final int STATE_DISCONNECTED = 0;
     public static final int STATE_CONNECTING = 1;
