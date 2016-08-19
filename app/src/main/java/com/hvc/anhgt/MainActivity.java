@@ -156,36 +156,36 @@ public class MainActivity extends Activity {
     }
 
     private BluetoothDevice SelectHVCDevice(String regStr) {
-        if ( nSelectDeviceNo < 0 ) {
-            if ( newFragment != null ) {
-                BleDeviceSearch bleSearch = new BleDeviceSearch(getApplicationContext());
-                // Show toast
-                showToast("You can select a device");
-                while ( newFragment != null ) {
-                    deviceList = bleSearch.getDevices();
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
+        BluetoothDevice dev = null;
+        while (dev == null) {
+
+            BleDeviceSearch bleSearch = new BleDeviceSearch(getApplicationContext());
+            deviceList = bleSearch.getDevices();
+
+            for (BluetoothDevice device : deviceList) {
+                if (device.getAddress().contains("F7:12:82:DA:9D:26")) {
+                    dev = device;
+                    showToast("You can select a device");
+                    nSelectDeviceNo = 1;
                 }
-                bleSearch.stopDeviceSearch(getApplicationContext());
             }
 
-            if ( nSelectDeviceNo > -1 ) {
-                // Generate pattern to determine
-                Pattern p = Pattern.compile(regStr);
-                Matcher m = p.matcher(deviceList.get(nSelectDeviceNo).getName());
-                if ( m.find() ) {
-                    // Find HVC device
-                    return deviceList.get(nSelectDeviceNo);
+            bleSearch.stopDeviceSearch(getApplicationContext());
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if ( isExecute == EXECUTE_STOP ) {
+                        Button bt = (Button) findViewById(R.id.button2);
+                        bt.setText(R.string.buttonE);
+                        isExecute = EXECUTE_START;
+                    }
                 }
-                nSelectDeviceNo = -1;
-            }
-            return null;
+            });
+
+            return dev;
         }
-        return deviceList.get(nSelectDeviceNo);
+        return null;
     }
 
     private final HVCBleCallback hvcCallback = new HVCBleCallback() {
